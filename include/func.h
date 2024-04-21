@@ -11,8 +11,8 @@ AVLTree<TypeKey, TypeData>::~AVLTree() {
 template <typename TypeKey, typename TypeData>
 bool AVLTree<TypeKey, TypeData>::insert(const TypeKey& key, const TypeData& data) {
     root = insertHelper(root, key, data);
+    size++;
     if (root != nullptr) {
-        size++;
         return true;
     }
     return false;
@@ -20,8 +20,8 @@ bool AVLTree<TypeKey, TypeData>::insert(const TypeKey& key, const TypeData& data
 
 template <typename TypeKey, typename TypeData>
 bool AVLTree<TypeKey, TypeData>::remove(const TypeKey& key) {
+    size--;
     if (removeHelper(root, key)) {
-        size--;
         return true;
     }
     return false;
@@ -85,8 +85,11 @@ bool AVLTree<TypeKey, TypeData>::removeHelper(Node<TypeKey, TypeData>*& node, co
     }
     else {
         if (node->left == nullptr && node->right == nullptr) {
+            Node<TypeKey, TypeData>* parent = node->parent;
             delete node;
             node = nullptr;
+            updateHeight(parent);
+            rebalance(root);
             return true;
         }
         else if (node->left == nullptr) {
@@ -94,6 +97,8 @@ bool AVLTree<TypeKey, TypeData>::removeHelper(Node<TypeKey, TypeData>*& node, co
             node = node->right;
             node->parent = temp->parent;
             delete temp;
+            updateHeight(node);
+            rebalance(root);
             return true;
         }
         else if (node->right == nullptr) {
@@ -101,6 +106,8 @@ bool AVLTree<TypeKey, TypeData>::removeHelper(Node<TypeKey, TypeData>*& node, co
             node = node->left;
             node->parent = temp->parent;
             delete temp;
+            updateHeight(node);
+            rebalance(root);
             return true;
         }
         else {
