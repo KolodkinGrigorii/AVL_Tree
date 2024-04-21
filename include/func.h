@@ -4,7 +4,9 @@ template <typename T>
 AVLTree<T>::AVLTree() : root{ nullptr }, size{ 0 } {}
 
 template <typename T>
-AVLTree<T>::~AVLTree() {}
+AVLTree<T>::~AVLTree() {
+    
+}
 
 template <typename T>
 bool AVLTree<T>::insert(const T& key) {
@@ -56,11 +58,13 @@ Node<T>* AVLTree<T>::insertHelper(Node<T>* node, const T& key) {
         return new Node<T>(key);
     }
 
-    if (key < node->key) {
+    if (key <= node->key) {
         node->left = insertHelper(node->left, key);
+        node->left->parent = node;
     }
     else if (key > node->key) {
         node->right = insertHelper(node->right, key);
+        node->right->parent = node;
     }
 
     updateHeight(node);
@@ -161,7 +165,12 @@ template <typename T>
 Node<T>* AVLTree<T>::rotateLeft(Node<T>* node) {
     Node<T>* right = node->right;
     node->right = right->left;
+    if (right->left != nullptr) {
+        right->left->parent = node;
+    }
     right->left = node;
+    node->parent = right;
+    right->parent = node->parent;
     updateHeight(node);
     updateHeight(right);
     return right;
@@ -171,7 +180,12 @@ template <typename T>
 Node<T>* AVLTree<T>::rotateRight(Node<T>* node) {
     Node<T>* left = node->left;
     node->left = left->right;
+    if (left->right != nullptr) {
+        left->right->parent = node;
+    }
     left->right = node;
+    node->parent = left;
+    left->parent = node->parent;
     updateHeight(node);
     updateHeight(left);
     return left;

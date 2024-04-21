@@ -9,9 +9,10 @@ public:
     T key;
     Node* left;
     Node* right;
+    Node* parent;
     int height;
 
-    Node(const T& key) : key{ key }, left{ nullptr }, right{ nullptr }, height{ 1 } {}
+    Node(const T& key) : key{ key }, left{ nullptr }, right{ nullptr }, height{ 1 }, parent{ nullptr } {}
 };
 
 template <typename T>
@@ -46,6 +47,7 @@ private:
     Node<T>* current;
 
     Node<T>* successorHelper(Node<T>* node) const {
+
         if (node->right != nullptr) {
             return minHelper(node->right);
         }
@@ -68,7 +70,23 @@ public:
     bool insert(const T& key);
     bool remove(const T& key);
     bool search(const T& key) const;
-
+    Node<T>* find(const T& key) {
+        Node<T>* node = root;
+        while (node->key != key) {
+            if (node->key == key) {
+                return node;
+            }
+            else if (key <= node->key) {
+                node = node->left;
+            }
+            else if (key > node->key) {
+                node = node->right;
+            }
+        }
+    }
+    Node<T>* rootfind(){
+        return root;
+    }
     T min() const;
     T max() const;
 

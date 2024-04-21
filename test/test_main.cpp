@@ -5,10 +5,10 @@
 using namespace std;
 int main() {
 	AVLTree<int> avl;
-	avl.insert(2);
-	avl.insert(3);
-	avl.insert(4);
-	auto it=avl.begin();
-	cout << *it;
-	++it;
+	for (int i = 0; i < 9; i++) {
+		avl.insert(i);
+	}
+	for (auto it = avl.begin(); it != avl.end(); ++it) {
+		cout << *it;
+	}
 }
