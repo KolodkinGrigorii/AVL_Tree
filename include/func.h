@@ -1,16 +1,16 @@
-#include "AVLTree.h"
+#include "avl_tree.h"
 
-template <typename T>
-AVLTree<T>::AVLTree() : root{ nullptr }, size{ 0 } {}
+template <typename TypeKey, typename TypeData>
+AVLTree<TypeKey, TypeData>::AVLTree() : root{ nullptr }, size{ 0 } {}
 
-template <typename T>
-AVLTree<T>::~AVLTree() {
+template <typename TypeKey, typename TypeData>
+AVLTree<TypeKey, TypeData>::~AVLTree() {
     
 }
 
-template <typename T>
-bool AVLTree<T>::insert(const T& key) {
-    root = insertHelper(root, key);
+template <typename TypeKey, typename TypeData>
+bool AVLTree<TypeKey, TypeData>::insert(const TypeKey& key, const TypeData& data) {
+    root = insertHelper(root, key, data);
     if (root != nullptr) {
         size++;
         return true;
@@ -18,8 +18,8 @@ bool AVLTree<T>::insert(const T& key) {
     return false;
 }
 
-template <typename T>
-bool AVLTree<T>::remove(const T& key) {
+template <typename TypeKey, typename TypeData>
+bool AVLTree<TypeKey, TypeData>::remove(const TypeKey& key) {
     if (removeHelper(root, key)) {
         size--;
         return true;
@@ -27,43 +27,43 @@ bool AVLTree<T>::remove(const T& key) {
     return false;
 }
 
-template <typename T>
-bool AVLTree<T>::search(const T& key) const {
+template <typename TypeKey, typename TypeData>
+bool AVLTree<TypeKey, TypeData>::search(const TypeKey& key) const {
     return searchHelper(root, key);
 }
 
-template <typename T>
-T AVLTree<T>::min() const {
+template <typename TypeKey, typename TypeData>
+TypeKey AVLTree<TypeKey, TypeData>::min() const {
     return minHelper(root)->key;
 }
 
-template <typename T>
-T AVLTree<T>::max() const {
+template <typename TypeKey, typename TypeData>
+TypeKey AVLTree<TypeKey, TypeData>::max() const {
     return maxHelper(root)->key;
 }
 
-template <typename T>
-AVLTreeIterator<T> AVLTree<T>::begin() const {
-    return AVLTreeIterator<T>(minHelper(root));
+template <typename TypeKey, typename TypeData>
+AVLTreeIterator<TypeKey, TypeData> AVLTree<TypeKey, TypeData>::begin() const {
+    return AVLTreeIterator<TypeKey, TypeData>(minHelper(root));
 }
 
-template <typename T>
-AVLTreeIterator<T> AVLTree<T>::end() const {
-    return AVLTreeIterator<T>(nullptr);
+template <typename TypeKey, typename TypeData>
+AVLTreeIterator<TypeKey, TypeData> AVLTree<TypeKey, TypeData>::end() const {
+    return AVLTreeIterator<TypeKey, TypeData>(nullptr);
 }
 
-template <typename T>
-Node<T>* AVLTree<T>::insertHelper(Node<T>* node, const T& key) {
+template <typename TypeKey, typename TypeData>
+Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::insertHelper(Node<TypeKey, TypeData>* node, const TypeKey& key, const TypeData& data) {
     if (node == nullptr) {
-        return new Node<T>(key);
+        return new Node<TypeKey, TypeData>(key, data);
     }
 
     if (key <= node->key) {
-        node->left = insertHelper(node->left, key);
+        node->left = insertHelper(node->left, key, data);
         node->left->parent = node;
     }
     else if (key > node->key) {
-        node->right = insertHelper(node->right, key);
+        node->right = insertHelper(node->right, key, data);
         node->right->parent = node;
     }
 
@@ -71,8 +71,8 @@ Node<T>* AVLTree<T>::insertHelper(Node<T>* node, const T& key) {
     return rebalance(node);
 }
 
-template <typename T>
-bool AVLTree<T>::removeHelper(Node<T>*& node, const T& key) {
+template <typename TypeKey, typename TypeData>
+bool AVLTree<TypeKey, TypeData>::removeHelper(Node<TypeKey, TypeData>*& node, const TypeKey& key) {
     if (node == nullptr) {
         return false;
     }
@@ -90,27 +90,29 @@ bool AVLTree<T>::removeHelper(Node<T>*& node, const T& key) {
             return true;
         }
         else if (node->left == nullptr) {
-            Node<T>* temp = node;
+            Node<TypeKey, TypeData>* temp = node;
             node = node->right;
+            node->parent = temp->parent;
             delete temp;
             return true;
         }
         else if (node->right == nullptr) {
-            Node<T>* temp = node;
+            Node<TypeKey, TypeData>* temp = node;
             node = node->left;
+            node->parent = temp->parent;
             delete temp;
             return true;
         }
         else {
-            Node<T>* successor = minHelper(node->right);
+            Node<TypeKey, TypeData>* successor = minHelper(node->right);
             node->key = successor->key;
             return removeHelper(node->right, successor->key);
         }
     }
 }
 
-template <typename T>
-bool AVLTree<T>::searchHelper(Node<T>* node, const T& key) const {
+template <typename TypeKey, typename TypeData>
+bool AVLTree<TypeKey, TypeData>::searchHelper(Node<TypeKey, TypeData>* node, const TypeKey& key) const {
     if (node == nullptr) {
         return false;
     }
@@ -126,8 +128,8 @@ bool AVLTree<T>::searchHelper(Node<T>* node, const T& key) const {
     }
 }
 
-template <typename T>
-Node<T>* AVLTree<T>::minHelper(Node<T>* node) const {
+template <typename TypeKey, typename TypeData>
+Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::minHelper(Node<TypeKey, TypeData>* node) const {
     if (node->left == nullptr) {
         return node;
     }
@@ -136,8 +138,8 @@ Node<T>* AVLTree<T>::minHelper(Node<T>* node) const {
     }
 }
 
-template <typename T>
-Node<T>* AVLTree<T>::maxHelper(Node<T>* node) const {
+template <typename TypeKey, typename TypeData>
+Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::maxHelper(Node<TypeKey, TypeData>* node) const {
     if (node->right == nullptr) {
         return node;
     }
@@ -146,24 +148,24 @@ Node<T>* AVLTree<T>::maxHelper(Node<T>* node) const {
     }
 }
 
-template <typename T>
-int AVLTree<T>::heightHelper(Node<T>* node) const {
+template <typename TypeKey, typename TypeData>
+int AVLTree<TypeKey, TypeData>::heightHelper(Node<TypeKey, TypeData>* node) const {
     return node == nullptr ? 0 : node->height;
 }
 
-template <typename T>
-int AVLTree<T>::getBalance(Node<T>* node) const {
+template <typename TypeKey, typename TypeData>
+int AVLTree<TypeKey, TypeData>::getBalance(Node<TypeKey, TypeData>* node) const {
     return heightHelper(node->left) - heightHelper(node->right);
 }
 
-template <typename T>
-void AVLTree<T>::updateHeight(Node<T>* node) {
+template <typename TypeKey, typename TypeData>
+void AVLTree<TypeKey, TypeData>::updateHeight(Node<TypeKey, TypeData>* node) {
     node->height = std::max(heightHelper(node->left), heightHelper(node->right)) + 1;
 }
 
-template <typename T>
-Node<T>* AVLTree<T>::rotateLeft(Node<T>* node) {
-    Node<T>* right = node->right;
+template <typename TypeKey, typename TypeData>
+Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::rotateLeft(Node<TypeKey, TypeData>* node) {
+    Node<TypeKey, TypeData>* right = node->right;
     node->right = right->left;
     if (right->left != nullptr) {
         right->left->parent = node;
@@ -176,9 +178,9 @@ Node<T>* AVLTree<T>::rotateLeft(Node<T>* node) {
     return right;
 }
 
-template <typename T>
-Node<T>* AVLTree<T>::rotateRight(Node<T>* node) {
-    Node<T>* left = node->left;
+template <typename TypeKey, typename TypeData>
+Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::rotateRight(Node<TypeKey, TypeData>* node) {
+    Node<TypeKey, TypeData>* left = node->left;
     node->left = left->right;
     if (left->right != nullptr) {
         left->right->parent = node;
@@ -191,8 +193,8 @@ Node<T>* AVLTree<T>::rotateRight(Node<T>* node) {
     return left;
 }
 
-template <typename T>
-Node<T>* AVLTree<T>::rebalance(Node<T>* node) {
+template <typename TypeKey, typename TypeData>
+Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::rebalance(Node<TypeKey, TypeData>* node) {
     int balance = getBalance(node);
 
     if (balance > 1) {
