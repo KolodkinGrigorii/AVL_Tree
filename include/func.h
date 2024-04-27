@@ -201,20 +201,54 @@ Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::rotateRight(Node<TypeKey, T
 }
 
 template <typename TypeKey, typename TypeData>
+Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::bigRotateRight(Node<TypeKey, TypeData>* node) {
+    Node<TypeKey, TypeData>* left = node->left;
+    node->left = rotateRight(left);
+    return rotateLeft(node);
+}
+
+template <typename TypeKey, typename TypeData>
+Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::bigRotateLeft(Node<TypeKey, TypeData>* node) {
+    Node<TypeKey, TypeData>* right = node->right;
+    node->right = rotateLeft(right);
+    return rotateRight(node);
+}
+
+template <typename TypeKey, typename TypeData>
 Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::rebalance(Node<TypeKey, TypeData>* node) {
     int balance = getBalance(node);
 
     if (balance > 1) {
         if (getBalance(node->left) < 0) {
-            node->left = rotateLeft(node->left);
+            node->left = bigRotateLeft(node->left);
         }
-        return rotateRight(node);
+        return bigRotateRight(node);
     }
     else if (balance < -1) {
         if (getBalance(node->right) > 0) {
-            node->right = rotateRight(node->right);
+            node->right = bigRotateRight(node->right);
         }
-        return rotateLeft(node);
+        return bigRotateLeft(node);
     }
     return node;
 };
+
+
+//template <typename TypeKey, typename TypeData>
+//Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::rebalance(Node<TypeKey, TypeData>* node) {
+//    int balance = getBalance(node);
+//
+//    if (balance > 1) {
+//        if (getBalance(node->left) < 0) {
+//            node->left = rotateLeft(node->left);
+//        }
+//        return rotateRight(node);
+//    }
+//    else if (balance < -1) {
+//        if (getBalance(node->right) > 0) {
+//            node->right = rotateRight(node->right);
+//        }
+//        return rotateLeft(node);
+//    }
+//    return node;
+//};

@@ -151,6 +151,8 @@ private:
 
     Node<TypeKey, TypeData>* rotateLeft(Node<TypeKey, TypeData>* node);
     Node<TypeKey, TypeData>* rotateRight(Node<TypeKey, TypeData>* node);
+    Node<TypeKey, TypeData>* bigRotateRight(Node<TypeKey, TypeData>* node);
+    Node<TypeKey, TypeData>* bigRotateLeft(Node<TypeKey, TypeData>* node);
     Node<TypeKey, TypeData>* rebalance(Node<TypeKey, TypeData>* node);
 };
 
