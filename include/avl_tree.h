@@ -132,6 +132,7 @@ public:
         order.push_back(node);
     }
     bool checkbalance(){
+        DFS(root);
         for (int i = 0; i < order.size(); i++) {
             if (getBalance(order[i]) > 1 || getBalance(order[i]) < -1) {
                 return false;
