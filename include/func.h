@@ -114,8 +114,9 @@ bool AVLTree<TypeKey, TypeData>::removeHelper(Node<TypeKey, TypeData>*& node, co
         }
         else {
             Node<TypeKey, TypeData>* successor = minHelper(node->right);
+            removeHelper(node->right, successor->key);
             node->key = successor->key;
-            return removeHelper(node->right, successor->key);
+            node->data = successor->data;
         }
         for (int i = 0; i < was.size(); i++) {
             updateHeight(was[i]);

@@ -2,6 +2,8 @@
 #define AVL_TREE_H
 
 #include <iostream>
+#include <vector>
+using namespace std;
 
 template <typename TypeKey, typename TypeData>
 class Node {
@@ -78,6 +80,8 @@ private:
 template <typename TypeKey, typename TypeData>
 class AVLTree {
 public:
+    vector<Node<TypeKey, TypeData>*> order;
+    vector<bool> was = vector<bool>(10000);
     AVLTree();
     ~AVLTree();
 
@@ -117,9 +121,21 @@ public:
     int getsize() {
         return size;
     }
+    void DFS(Node<TypeKey, TypeData>* node) {
+        if (node->left != nullptr && !was[node->left->key]) {
+            DFS(node->left);
+        }
+        if (node->right != nullptr && !was[node->right->key]) {
+            DFS(node->right);
+        }
+        was[node->key] = true;
+        order.push_back(node);
+    }
     bool checkbalance(){
-        if (getBalance(root) > 1 || getBalance(root) < -1) {
-            return false;
+        for (int i = 0; i < order.size(); i++) {
+            if (getBalance(order[i]) > 1 || getBalance(order[i]) < -1) {
+                return false;
+            }
         }
         return true;
     }
