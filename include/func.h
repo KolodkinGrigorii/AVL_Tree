@@ -97,6 +97,15 @@ bool AVLTree<TypeKey, TypeData>::removeHelper(Node<TypeKey, TypeData>*& node, co
         }
         if (node->left == nullptr && node->right == nullptr) {
             Node<TypeKey, TypeData>* parent = node->parent;
+            if (parent!=nullptr && key < parent->key) {
+                parent->left=nullptr;
+            }
+            else if (parent != nullptr) {
+                parent->right = nullptr;
+            }
+            else {
+                root = nullptr;
+            }
             delete node;
             node = nullptr;
         }
@@ -122,7 +131,7 @@ bool AVLTree<TypeKey, TypeData>::removeHelper(Node<TypeKey, TypeData>*& node, co
             updateHeight(was[i]);
         }
         for (int i = 0; i < was.size(); i++) {
-            if (checkbalance()) {
+            if (checkbalance(root)) {
                 break;
             }
             rebalance(was[i]);

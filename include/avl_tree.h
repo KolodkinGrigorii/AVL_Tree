@@ -131,14 +131,18 @@ public:
         was[node->key] = true;
         order.push_back(node);
     }
-    bool checkbalance(){
-        DFS(root);
-        for (int i = 0; i < order.size(); i++) {
-            if (getBalance(order[i]) > 1 || getBalance(order[i]) < -1) {
-                return false;
-            }
+    bool checkbalance(Node<TypeKey, TypeData>* node) {
+        if (node == nullptr) {
+            return true;
         }
-        return true;
+
+        int balanceFactor = getBalance(node);
+
+        if (balanceFactor < -1 || balanceFactor > 1) {
+            return false;
+        }
+
+        return checkbalance(node->left) && checkbalance(node->right);
     }
     int getheight() {
         return root->height;

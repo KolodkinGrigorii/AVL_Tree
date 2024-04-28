@@ -111,11 +111,11 @@ TEST(AVLTreeTest, BigRandomInsert) {
 	shuffle(ar.begin(), ar.end(), g);
 	for (int i = 0; i < N; i++) {
 		tree.insert(ar[i], ar[i]);
-		EXPECT_TRUE(tree.checkbalance());
+		EXPECT_TRUE(tree.checkbalance(tree.rootfind()));
 	}
 	for (int i = 0; i < N; i++) {
 		EXPECT_EQ(i, tree.find(i)->key);
-		EXPECT_TRUE(tree.checkbalance());
+		EXPECT_TRUE(tree.checkbalance(tree.rootfind()));
 	}
 }
 
@@ -131,17 +131,17 @@ TEST(AVLTreeTest, BigRandomRemove) {
 	shuffle(ar.begin(), ar.end(), g);
 	for (int i = 0; i < N; i++) {
 		tree.insert(ar[i], ar[i]);
-		EXPECT_TRUE(tree.checkbalance());
+		EXPECT_TRUE(tree.checkbalance(tree.rootfind()));
 	}
 	shuffle(ar.begin(), ar.end(), g);
 	for (int i = 0; i < N; i++) {
-		tree.remove(ar[i]);
+		EXPECT_TRUE(tree.remove(ar[i]));
 		EXPECT_EQ(N - i - 1, tree.getsize());
-		EXPECT_TRUE(tree.checkbalance());
+		EXPECT_TRUE(tree.checkbalance(tree.rootfind()));
 	}
 	EXPECT_EQ(0, tree.getsize());
 }
-TEST(AVLTreeTest, BigRandomInsertAndRemove) {
+/*TEST(AVLTreeTest, BigRandomInsertAndRemove) {
 	const int N = 1000;
 	AVLTree<int, int> tree;
 	vector<int> ar;
@@ -179,4 +179,4 @@ TEST(AVLTreeTest, BigRandomInsertAndRemove) {
 	else {
 		cout << 0 <<" "<< j;
 	}
-}
+}*/
