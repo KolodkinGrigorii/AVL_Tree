@@ -23,6 +23,7 @@ public:
 
     TypeData& operator*() { return current->data; }
     Node<TypeKey, TypeData>* operator->() { return current; }
+    Node<TypeKey, TypeData>* getcurrent() { return current; }
 
     AVLTreeIterator<TypeKey, TypeData>& operator++() {
         current = successorHelper(current);
@@ -59,7 +60,7 @@ private:
             return minHelper(node->right);
         }
         Node<TypeKey, TypeData>* temp = node->parent;
-        while (temp->parent!=nullptr && temp->key != temp->parent->key) {
+        while (temp!=nullptr && temp->parent!=nullptr && temp->key != temp->parent->key) {
             temp = temp->parent;
         }
         if (node->key == maxHelper(temp)->key) {
@@ -128,6 +129,7 @@ public:
     Node<TypeKey, TypeData>* rootfind(){
         return root;
     }
+
     TypeKey min() const;
     TypeKey max() const;
 

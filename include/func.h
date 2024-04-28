@@ -1,11 +1,11 @@
-#include "avl_tree.h"
+﻿#include "avl_tree.h"
 
 template <typename TypeKey, typename TypeData>
 AVLTree<TypeKey, TypeData>::AVLTree() : root{ nullptr }, size{ 0 } {}
 
 template <typename TypeKey, typename TypeData>
 AVLTree<TypeKey, TypeData>::~AVLTree() {
-    
+
 }
 
 template <typename TypeKey, typename TypeData>
@@ -84,36 +84,47 @@ bool AVLTree<TypeKey, TypeData>::removeHelper(Node<TypeKey, TypeData>*& node, co
         return removeHelper(node->right, key);
     }
     else {
+        vector<Node<TypeKey, TypeData>*> was;
+        Node<TypeKey, TypeData>* temp = root;
+        while (temp->key != node->key) {
+            was.push_back(temp);
+            if (node->key <= temp->key) {
+                temp = temp->left;
+            }
+            else {
+                temp = temp->right;
+            }
+        }
         if (node->left == nullptr && node->right == nullptr) {
             Node<TypeKey, TypeData>* parent = node->parent;
             delete node;
             node = nullptr;
-            updateHeight(parent);
-            rebalance(root);
-            return true;
         }
         else if (node->left == nullptr) {
             Node<TypeKey, TypeData>* temp = node;
             node = node->right;
             node->parent = temp->parent;
             delete temp;
-            updateHeight(node);
-            rebalance(root);
-            return true;
         }
         else if (node->right == nullptr) {
             Node<TypeKey, TypeData>* temp = node;
             node = node->left;
             node->parent = temp->parent;
             delete temp;
-            updateHeight(node);
-            rebalance(root);
-            return true;
         }
         else {
             Node<TypeKey, TypeData>* successor = minHelper(node->right);
             node->key = successor->key;
             return removeHelper(node->right, successor->key);
+        }
+        for (int i = 0; i < was.size(); i++) {
+            updateHeight(was[i]);
+        }
+        for (int i = 0; i < was.size(); i++) {
+            if (checkbalance()) {
+                break;
+            }
+            rebalance(was[i]);
         }
     }
 }
@@ -162,6 +173,9 @@ int AVLTree<TypeKey, TypeData>::heightHelper(Node<TypeKey, TypeData>* node) cons
 
 template <typename TypeKey, typename TypeData>
 int AVLTree<TypeKey, TypeData>::getBalance(Node<TypeKey, TypeData>* node) const {
+    if (node == nullptr) {
+        return 0;
+    }
     return heightHelper(node->left) - heightHelper(node->right);
 }
 
@@ -178,8 +192,11 @@ Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::rotateLeft(Node<TypeKey, Ty
         right->left->parent = node;
     }
     right->left = node;
-    node->parent = right;
     right->parent = node->parent;
+    if (node->parent == nullptr) {
+        root = right;
+    }
+    node->parent = right;
     updateHeight(node);
     updateHeight(right);
     return right;
@@ -193,25 +210,14 @@ Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::rotateRight(Node<TypeKey, T
         left->right->parent = node;
     }
     left->right = node;
-    node->parent = left;
     left->parent = node->parent;
+    if (node->parent == nullptr) {
+        root = left;
+    }
+    node->parent = left;
     updateHeight(node);
     updateHeight(left);
     return left;
-}
-
-template <typename TypeKey, typename TypeData>
-Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::bigRotateRight(Node<TypeKey, TypeData>* node) {
-    Node<TypeKey, TypeData>* left = node->left;
-    node->left = rotateRight(left);
-    return rotateLeft(node);
-}
-
-template <typename TypeKey, typename TypeData>
-Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::bigRotateLeft(Node<TypeKey, TypeData>* node) {
-    Node<TypeKey, TypeData>* right = node->right;
-    node->right = rotateLeft(right);
-    return rotateRight(node);
 }
 
 template <typename TypeKey, typename TypeData>
@@ -220,35 +226,15 @@ Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::rebalance(Node<TypeKey, Typ
 
     if (balance > 1) {
         if (getBalance(node->left) < 0) {
-            node->left = bigRotateLeft(node->left);
+            node->left = rotateLeft(node->left);
         }
-        return bigRotateRight(node);
+        return rotateRight(node);
     }
     else if (balance < -1) {
         if (getBalance(node->right) > 0) {
-            node->right = bigRotateRight(node->right);
+            node->right = rotateRight(node->right);
         }
-        return bigRotateLeft(node);
+        return rotateLeft(node);
     }
     return node;
 };
-
-
-//template <typename TypeKey, typename TypeData>
-//Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::rebalance(Node<TypeKey, TypeData>* node) {
-//    int balance = getBalance(node);
-//
-//    if (balance > 1) {
-//        if (getBalance(node->left) < 0) {
-//            node->left = rotateLeft(node->left);
-//        }
-//        return rotateRight(node);
-//    }
-//    else if (balance < -1) {
-//        if (getBalance(node->right) > 0) {
-//            node->right = rotateRight(node->right);
-//        }
-//        return rotateLeft(node);
-//    }
-//    return node;
-//};
