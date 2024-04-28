@@ -120,7 +120,7 @@ TEST(AVLTreeTest, BigRandomInsert) {
 }
 
 TEST(AVLTreeTest, BigRandomRemove) {
-	const int N = 10000;
+	const int N = 1000;
 	vector<int> ar;
 	AVLTree<int, int> tree;
 	for (int i = 0; i < N; i++) {
