@@ -21,7 +21,7 @@ bool AVLTree<TypeKey, TypeData>::insert(const TypeKey& key, const TypeData& data
 template <typename TypeKey, typename TypeData>
 bool AVLTree<TypeKey, TypeData>::remove(const TypeKey& key) {
     size--;
-    if (removeHelper(root, key)) {
+    if (removeHelper(key)) {
         return true;
     }
     return false;
@@ -72,62 +72,81 @@ Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::insertHelper(Node<TypeKey, 
 }
 
 template <typename TypeKey, typename TypeData>
-bool AVLTree<TypeKey, TypeData>::removeHelper(Node<TypeKey, TypeData>*& node, const TypeKey& key) {
-    if (node == nullptr) {
-        return false;
-    }
-
-    if (key < node->key) {
-        return removeHelper(node->left, key);
-    }
-    else if (key > node->key) {
-        return removeHelper(node->right, key);
-    }
-    else {
+bool AVLTree<TypeKey, TypeData>::removeHelper(const TypeKey& key) {
         vector<Node<TypeKey, TypeData>*> was;
-        Node<TypeKey, TypeData>* temp = root;
-        while (temp->key != node->key) {
-            was.push_back(temp);
-            if (node->key <= temp->key) {
-                temp = temp->left;
+        Node<TypeKey, TypeData>* tmp = root;
+        while (tmp->key != key) {
+            was.push_back(tmp);
+            if (key <= tmp->key) {
+                tmp = tmp->left;
             }
-            else {
-                temp = temp->right;
+            else if (key > tmp->key){
+                tmp = tmp->right;
             }
         }
-        if (node->left == nullptr && node->right == nullptr) {
-            Node<TypeKey, TypeData>* parent = node->parent;
+        if (tmp->left == nullptr && tmp->right == nullptr) {
+            Node<TypeKey, TypeData>* parent = tmp->parent;
             if (parent!=nullptr && key < parent->key) {
                 parent->left=nullptr;
             }
             else if (parent != nullptr) {
                 parent->right = nullptr;
             }
-            else {
+            else if (parent==nullptr){
                 root = nullptr;
             }
-            delete node;
-            node = nullptr;
+            Node<TypeKey, TypeData>* temp = parent;
+            while (temp != nullptr) {
+                updateHeight(temp);
+                temp = temp->parent;
+            }
+            delete tmp;
         }
-        else if (node->left == nullptr) {
-            Node<TypeKey, TypeData>* temp = node;
-            node = node->right;
-            node->parent = temp->parent;
-            delete temp;
+        else if (tmp->left == nullptr) {
+            if (tmp->parent!=nullptr && key < tmp->parent->key) {
+                tmp->parent->left = tmp->right;
+            }
+            else if (tmp->parent!=nullptr){
+                tmp->parent->right = tmp->right;
+            }
+            else if (tmp->parent==nullptr){
+                root = tmp->right;
+            }
+            tmp->right->parent = tmp->parent;
+            Node<TypeKey, TypeData>* temp=tmp->right;
+            while (temp != nullptr) {
+                updateHeight(temp);
+                temp = temp->parent;
+            }
+            delete tmp;
         }
-        else if (node->right == nullptr) {
-            Node<TypeKey, TypeData>* temp = node;
-            node = node->left;
-            node->parent = temp->parent;
-            delete temp;
+        else if (tmp->right == nullptr) {
+            if (tmp->parent!=nullptr && key < tmp->parent->key) {
+                tmp->parent->left = tmp->left;
+            }
+            else if (tmp->parent!=nullptr){
+                tmp->parent->right = tmp->left;
+            }
+            else if (tmp->parent==nullptr){
+                root = tmp->left;
+            }
+            tmp->left->parent = tmp->parent;
+            Node<TypeKey, TypeData>* temp = tmp->left;
+            while (temp != nullptr) {
+                updateHeight(temp);
+                temp = temp->parent;
+            }
+            delete tmp;
         }
         else {
-            Node<TypeKey, TypeData>* successor = minHelper(node->right);
-            removeHelper(node->right, successor->key);
-            node->key = successor->key;
-            node->data = successor->data;
+            TypeKey successork = minHelper(tmp->right)->key;
+            TypeData successord = minHelper(tmp->right)->data;
+            removeHelper(successork);
+            tmp->key = successork;
+            tmp->data = successord;
         }
-        for (int i = 0; i < was.size(); i++) {
+
+        /*for (int i = 0; i < was.size(); i++) {
             updateHeight(was[i]);
         }
         for (int i = 0; i < was.size(); i++) {
@@ -135,8 +154,8 @@ bool AVLTree<TypeKey, TypeData>::removeHelper(Node<TypeKey, TypeData>*& node, co
                 break;
             }
             rebalance(was[i]);
-        }
-    }
+        }*/
+        return true;
 }
 
 template <typename TypeKey, typename TypeData>

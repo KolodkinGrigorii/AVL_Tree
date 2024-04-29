@@ -90,7 +90,7 @@ public:
     bool search(const TypeKey& key) const;
     AVLTreeIterator<TypeKey, TypeData> find(const TypeKey& key) {
         Node<TypeKey, TypeData>* node = root;
-        while (node->key != key) {
+        while (node!=nullptr && node->key != key) {
             if (node->key == key) {
                 return node;
             }
@@ -100,6 +100,9 @@ public:
             else if (key > node->key) {
                 node = node->right;
             }
+        }
+        if (node == nullptr) {
+            throw 'FALL';
         }
         return AVLTreeIterator<TypeKey, TypeData>(node);
     }
@@ -162,7 +165,7 @@ private:
     int size;
 
     Node<TypeKey, TypeData>* insertHelper(Node<TypeKey, TypeData>* node, const TypeKey& key, const TypeData& data);
-    bool removeHelper(Node<TypeKey, TypeData>*& node, const TypeKey& key);
+    bool removeHelper(const TypeKey& key);
     bool searchHelper(Node<TypeKey, TypeData>* node, const TypeKey& key) const;
 
     Node<TypeKey, TypeData>* minHelper(Node<TypeKey, TypeData>* node) const;
