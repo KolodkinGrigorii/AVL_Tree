@@ -73,10 +73,8 @@ Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::insertHelper(Node<TypeKey, 
 
 template <typename TypeKey, typename TypeData>
 bool AVLTree<TypeKey, TypeData>::removeHelper(const TypeKey& key) {
-        vector<Node<TypeKey, TypeData>*> was;
         Node<TypeKey, TypeData>* tmp = root;
         while (tmp->key != key) {
-            was.push_back(tmp);
             if (key <= tmp->key) {
                 tmp = tmp->left;
             }
@@ -145,16 +143,7 @@ bool AVLTree<TypeKey, TypeData>::removeHelper(const TypeKey& key) {
             tmp->key = successork;
             tmp->data = successord;
         }
-
-        /*for (int i = 0; i < was.size(); i++) {
-            updateHeight(was[i]);
-        }
-        for (int i = 0; i < was.size(); i++) {
-            if (checkbalance(root)) {
-                break;
-            }
-            rebalance(was[i]);
-        }*/
+        changebalance(root);
         return true;
 }
 
@@ -222,6 +211,12 @@ Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::rotateLeft(Node<TypeKey, Ty
     }
     right->left = node;
     right->parent = node->parent;
+    if (node->parent!=nullptr && right->key < node->parent->key) {
+        node->parent->left = right;
+    }
+    else if (node->parent!=nullptr){
+        node->parent->right = right;
+    }
     if (node->parent == nullptr) {
         root = right;
     }
@@ -240,6 +235,12 @@ Node<TypeKey, TypeData>* AVLTree<TypeKey, TypeData>::rotateRight(Node<TypeKey, T
     }
     left->right = node;
     left->parent = node->parent;
+    if (node->parent!=nullptr && left->key < node->parent->key) {
+        node->parent->left = left;
+    }
+    else if (node->parent != nullptr) {
+        node->parent->right = left;
+    }
     if (node->parent == nullptr) {
         root = left;
     }

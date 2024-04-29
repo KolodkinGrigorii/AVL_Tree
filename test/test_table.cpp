@@ -111,6 +111,7 @@ TEST(AVLTreeTest, BigRandomInsert) {
 	shuffle(ar.begin(), ar.end(), g);
 	for (int i = 0; i < N; i++) {
 		tree.insert(ar[i], ar[i]);
+		ASSERT_NO_THROW(tree.find(ar[i]));
 		EXPECT_TRUE(tree.checkbalance(tree.rootfind()));
 	}
 	for (int i = 0; i < N; i++) {
@@ -120,7 +121,7 @@ TEST(AVLTreeTest, BigRandomInsert) {
 }
 
 TEST(AVLTreeTest, BigRandomRemove) {
-	const int N = 100;
+	const int N = 500;
 	vector<int> ar;
 	AVLTree<int, int> tree;
 	for (int i = 0; i < N; i++) {
@@ -139,7 +140,7 @@ TEST(AVLTreeTest, BigRandomRemove) {
 		EXPECT_TRUE(tree.remove(ar[i]));
 		ASSERT_ANY_THROW(tree.find(ar[i]));
 		EXPECT_EQ(N - i - 1, tree.getsize());
-	    //EXPECT_TRUE(tree.checkbalance(tree.rootfind()));
+	    EXPECT_TRUE(tree.checkbalance(tree.rootfind()));
 	}
 	EXPECT_EQ(0, tree.getsize());
 }

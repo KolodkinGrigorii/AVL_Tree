@@ -80,8 +80,6 @@ private:
 template <typename TypeKey, typename TypeData>
 class AVLTree {
 public:
-    vector<Node<TypeKey, TypeData>*> order;
-    vector<bool> was = vector<bool>(10000);
     AVLTree();
     ~AVLTree();
 
@@ -124,16 +122,6 @@ public:
     int getsize() {
         return size;
     }
-    void DFS(Node<TypeKey, TypeData>* node) {
-        if (node->left != nullptr && !was[node->left->key]) {
-            DFS(node->left);
-        }
-        if (node->right != nullptr && !was[node->right->key]) {
-            DFS(node->right);
-        }
-        was[node->key] = true;
-        order.push_back(node);
-    }
     bool checkbalance(Node<TypeKey, TypeData>* node) {
         if (node == nullptr) {
             return true;
@@ -146,6 +134,19 @@ public:
         }
 
         return checkbalance(node->left) && checkbalance(node->right);
+    }
+    void changebalance(Node<TypeKey, TypeData>* node) {
+        Node<TypeKey, TypeData>* temp = node;
+        while (checkbalance(node) == false && node!=nullptr) {
+            int balanceFactor = getBalance(node);
+
+            if (balanceFactor < -1 || balanceFactor > 1) {
+                rebalance(temp);
+                balanceFactor = getBalance(node);
+            }
+            changebalance(node->left);
+            changebalance(node->right);
+        }
     }
     int getheight() {
         return root->height;
